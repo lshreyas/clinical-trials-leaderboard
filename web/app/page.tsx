@@ -1,54 +1,76 @@
 import { getTrials } from "@/lib/data";
-import { LeaderboardTable } from "@/components/LeaderboardTable";
-import { FlaskConical } from "lucide-react";
+import { TrialList } from "@/components/TrialList";
+import { lifeYearsAtStake, formatLifeYears } from "@/lib/types";
 
 export default async function Home() {
   const trials = await getTrials();
-
-  const avgScore = (trials.reduce((s, t) => s + t.impact_score, 0) / trials.length).toFixed(1);
-  const phase3Count = trials.filter((t) => t.phase === "PHASE3").length;
+  const totalLifeYears = trials.reduce((s, t) => s + lifeYearsAtStake(t), 0);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <FlaskConical className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-slate-900">Clinical Trials Impact Leaderboard</h1>
+    <main className="min-h-screen">
+      {/* Hero */}
+      <section className="max-w-3xl mx-auto px-8 pt-24 pb-16">
+        <p className="smallcaps text-ink-muted mb-8">An Atlas · Vol. 1 · Updated Weekly</p>
+
+        <h1 className="font-serif text-6xl md:text-7xl leading-[0.95] tracking-tight font-light text-ink">
+          The Frontier of
+          <br />
+          <span className="italic font-normal">Human Health.</span>
+        </h1>
+
+        <hr className="rule my-10 w-24" />
+
+        <p className="font-serif text-2xl leading-snug text-ink max-w-2xl">
+          <span className="numeral">{trials.length}</span> clinical trials are running
+          right now that could change everything.
+        </p>
+
+        <p className="font-serif text-2xl leading-snug text-ink-muted max-w-2xl mt-3">
+          We rank them by what's at stake — measured in years of healthy human life.
+        </p>
+
+        <div className="mt-12 flex items-baseline gap-6">
+          <div>
+            <p className="font-serif text-5xl font-light numeral text-accent">
+              {formatLifeYears(totalLifeYears)}
+            </p>
+            <p className="smallcaps text-ink-muted mt-2">
+              Life-years at stake, annually
+            </p>
           </div>
-          <p className="text-slate-500 max-w-2xl">
-            Ranks ongoing clinical trials by their potential to improve human health. Score = best-case
-            DALYs averted × breakthrough premium vs. current standard of care.
-          </p>
         </div>
+      </section>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          {[
-            { label: "Trials tracked", value: trials.length.toLocaleString() },
-            { label: "Phase 3 trials", value: phase3Count.toLocaleString() },
-            { label: "Avg impact score", value: avgScore },
-          ].map(({ label, value }) => (
-            <div key={label} className="bg-white rounded-xl border border-slate-200 px-5 py-4">
-              <p className="text-2xl font-bold text-slate-900">{value}</p>
-              <p className="text-sm text-slate-500 mt-1">{label}</p>
-            </div>
-          ))}
-        </div>
+      <hr className="rule max-w-3xl mx-auto" />
 
-        <LeaderboardTable trials={trials} />
+      {/* The list */}
+      <TrialList trials={trials} />
 
-        <p className="mt-6 text-xs text-slate-400 text-center">
-          Data from{" "}
-          <a href="https://clinicaltrials.gov" className="underline hover:text-slate-600" target="_blank">
+      {/* Footer */}
+      <footer className="max-w-3xl mx-auto px-8 py-16 mt-16 border-t border-rule">
+        <p className="smallcaps text-ink-muted mb-4">Methodology</p>
+        <p className="font-serif text-lg text-ink-muted leading-relaxed">
+          Each trial is scored by best-case life-years saved if the treatment works
+          fully and reaches all eligible patients, weighted by how much it improves
+          on the current standard of care. Data from{" "}
+          <a
+            href="https://clinicaltrials.gov"
+            className="text-ink underline decoration-rule underline-offset-4 hover:decoration-ink"
+            target="_blank"
+          >
             ClinicalTrials.gov
           </a>{" "}
-          · Disease burden from IHME GBD 2021 · Scores updated weekly
+          and the{" "}
+          <a
+            href="https://www.healthdata.org/gbd"
+            className="text-ink underline decoration-rule underline-offset-4 hover:decoration-ink"
+            target="_blank"
+          >
+            IHME Global Burden of Disease
+          </a>{" "}
+          project. Updated weekly.
         </p>
-      </div>
+      </footer>
     </main>
   );
 }

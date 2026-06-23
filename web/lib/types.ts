@@ -23,7 +23,22 @@ export interface Trial {
   breakthrough_premium?: number;
   breakthrough_label?: string;
   summary?: string;
+  tagline?: string;
   score_rationale?: string;
+}
+
+// Best-case life-years that could be saved annually if treatment works
+// fully and reaches all eligible patients globally.
+export function lifeYearsAtStake(t: Trial): number {
+  const efficacy = t.efficacy_ceiling ?? 0.3;
+  const breakthrough = t.breakthrough_premium ?? 1;
+  return t.dalys * 1000 * efficacy * (breakthrough / 2);
+}
+
+export function formatLifeYears(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
+  return n.toFixed(0);
 }
 
 export interface Filters {
