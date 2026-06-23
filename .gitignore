@@ -1,8 +1,7 @@
 .venv/
 __pycache__/
 *.pyc
-data/
+data/*.csv
 .env
 .DS_Store
-*.csv
-*.json
+.claude/

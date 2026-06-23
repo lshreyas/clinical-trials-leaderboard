@@ -50,9 +50,11 @@ def run(max_trials: int = 1000, enrich_top: int = 100):
 
     os.makedirs("data", exist_ok=True)
     out_path = "data/trials_scored.json"
-    records = df.to_dict(orient="records")
+    # Replace NaN with None so the output is valid JSON (NaN is not)
+    df_clean = df.where(df.notna(), None)
+    records = df_clean.to_dict(orient="records")
     with open(out_path, "w") as f:
-        json.dump(records, f, indent=2, default=str)
+        json.dump(records, f, indent=2, default=str, allow_nan=False)
 
     print(f"[{datetime.now():%H:%M:%S}] Saved {len(records)} trials to {out_path}")
 
