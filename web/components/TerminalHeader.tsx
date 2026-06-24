@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Trial, lifeYearsAtStake, formatLifeYears } from "@/lib/types";
 
 interface Props {
@@ -41,10 +42,35 @@ export function TerminalHeader({ trials }: Props) {
           <span className="text-accent">◆</span> TRIAL_IMPACT_ATLAS{" "}
           <span className="text-ink-muted">· v1.0</span>
         </p>
-        <p className="text-ink-muted">
-          last_refresh: <span className="text-ink">{timestamp}</span> ·
-          trials: <span className="text-ink">{total}</span> · ttl:{" "}
-          <span className="text-ink">7d</span>
+        <nav className="flex items-baseline gap-4 text-ink-muted">
+          <Link href="/about" className="hover:text-ink">about</Link>
+          <Link href="/" className="hover:text-ink">atlas</Link>
+          <span>
+            last_refresh: <span className="text-ink">{timestamp}</span> · ttl:{" "}
+            <span className="text-ink">7d</span>
+          </span>
+        </nav>
+      </div>
+
+      {/* Human-readable intro */}
+      <div className="max-w-7xl mx-auto px-6 pt-6 pb-2">
+        <h1
+          className="text-3xl md:text-4xl font-bold text-ink leading-tight max-w-3xl"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Which clinical trials could change humanity the most?
+        </h1>
+        <p
+          className="text-ink-muted mt-3 max-w-2xl text-[14px] leading-relaxed"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          A ranked atlas of {total.toLocaleString()} ongoing trials, scored by best-case
+          life-years saved if the treatment works fully. Each row is a trial; the bar shows
+          its impact relative to the others. Hover any row for a one-line summary, click to
+          dive in.{" "}
+          <Link href="/about" className="text-accent hover:underline">
+            How this works ↗
+          </Link>
         </p>
       </div>
 
