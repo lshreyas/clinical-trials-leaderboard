@@ -26,25 +26,25 @@ function Component({ label, value, max, pct, color = "bg-ink" }: {
   color?: string;
 }) {
   return (
-    <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-center py-2 text-[12px]">
-      <div>
-        <p className="text-ink">{label}</p>
-        {max && <p className="text-[10px] text-ink-faint">{max}</p>}
-      </div>
-      <div className="font-mono numeral text-ink font-semibold tabular-nums min-w-[4rem] text-right">
-        {value}
+    <div className="py-3 text-[12px]">
+      <div className="flex items-baseline justify-between gap-3 mb-1.5">
+        <span className="text-ink font-medium">{label}</span>
+        <span className="text-ink font-semibold tabular-nums numeral text-right shrink-0">
+          {value}
+        </span>
       </div>
       <div className="flex items-center gap-2">
-        <div className="w-32 h-2 bg-rule-soft overflow-hidden">
+        <div className="flex-1 h-1.5 bg-rule-soft overflow-hidden">
           <div
             className={`h-full ${color}`}
             style={{ width: `${Math.min(100, pct)}%` }}
           />
         </div>
-        <span className="text-[10px] text-ink-faint w-9 text-right tabular-nums">
+        <span className="text-[10px] text-ink-faint w-8 text-right tabular-nums shrink-0">
           {pct.toFixed(0)}%
         </span>
       </div>
+      {max && <p className="text-[10px] text-ink-faint mt-1.5">{max}</p>}
     </div>
   );
 }
@@ -76,10 +76,10 @@ export default async function TrialPage({ params }: { params: Promise<{ nct_id: 
         </div>
       </header>
 
-      <article className="max-w-5xl mx-auto px-6 py-8">
+      <article className="max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Identity strip */}
         <div className="grid grid-cols-[auto_1fr_auto] gap-3 items-baseline border-b border-rule pb-3 mb-6 text-[11px]">
-          <span className="label-bright">RANK</span>
+          <span className="label-bright">Rank</span>
           <span className="text-ink numeral font-bold">#{String(trial.rank).padStart(3, "0")}</span>
           <span className="text-ink-muted">{trial.nct_id}</span>
         </div>
@@ -94,28 +94,28 @@ export default async function TrialPage({ params }: { params: Promise<{ nct_id: 
             <span className="text-ink-muted">{PHASE_LABELS[trial.phase]?.toUpperCase()}</span>
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold leading-tight text-ink mb-6" style={{ fontFamily: "var(--font-display)" }}>
+          <h1 className="text-2xl md:text-4xl font-bold leading-tight text-ink mb-6" style={{ fontFamily: "var(--font-display)" }}>
             {trial.tagline ?? trial.title}
           </h1>
 
-          <div className="flex items-baseline gap-3">
-            <p className="text-5xl font-bold text-accent numeral tabular-nums">
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <p className="text-4xl md:text-5xl font-bold text-accent numeral tabular-nums">
               {formatLifeYears(ly)}
             </p>
             <p className="label">
-              life-years at stake · annually · global ceiling
+              life-years at stake · annually
             </p>
           </div>
         </div>
 
-        {/* Two-column body */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_20rem] gap-8 items-start">
+        {/* Two-column body — score panel comes first on mobile so it's visible above the fold */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_20rem] gap-6 md:gap-8 items-start">
           {/* Left: narrative */}
           <div className="space-y-6">
             {trial.summary && (
               <section>
                 <p className="label mb-2">
-                  <span className="text-accent">{">"}</span> summary
+                  <span className="text-accent">{">"}</span> Summary
                 </p>
                 <p className="text-[14px] leading-relaxed text-ink" style={{ fontFamily: "var(--font-display)" }}>
                   {trial.summary}
@@ -126,7 +126,7 @@ export default async function TrialPage({ params }: { params: Promise<{ nct_id: 
             {trial.score_rationale && (
               <section>
                 <p className="label mb-2">
-                  <span className="text-accent">{">"}</span> score_rationale
+                  <span className="text-accent">{">"}</span> Score rationale
                 </p>
                 <p className="text-[13px] leading-relaxed text-ink" style={{ fontFamily: "var(--font-display)" }}>
                   {trial.score_rationale}
@@ -136,7 +136,7 @@ export default async function TrialPage({ params }: { params: Promise<{ nct_id: 
 
             <section>
               <p className="label mb-2">
-                <span className="text-accent">{">"}</span> metadata
+                <span className="text-accent">{">"}</span> Metadata
               </p>
               <div className="border border-rule bg-white">
                 <table className="w-full text-[12px]">
@@ -171,36 +171,36 @@ export default async function TrialPage({ params }: { params: Promise<{ nct_id: 
             </p>
           </div>
 
-          {/* Right: score breakdown */}
-          <aside className="border border-rule bg-white p-4 sticky top-4">
-            <p className="label-bright mb-3">SCORE_BREAKDOWN</p>
+          {/* Right (or top on mobile): score breakdown */}
+          <aside className="order-first md:order-none border border-rule bg-white p-4 md:sticky md:top-4">
+            <p className="label-bright mb-3">Score breakdown</p>
 
             <Component
-              label="disease_burden"
+              label="Disease burden"
               value={`${(trial.dalys / 1000).toFixed(1)}M`}
-              max="global DALYs/yr"
+              max="global DALYs / year"
               pct={dalysNorm}
               color="bg-emerald-600"
             />
-            <hr className="rule-soft my-1" />
+            <hr className="rule-soft" />
             <Component
-              label="efficacy_ceiling"
+              label="Efficacy ceiling"
               value={trial.efficacy_ceiling_label ?? "—"}
               max={trial.efficacy_ceiling ? `${Math.round(efficacyPct)}% of burden` : undefined}
               pct={efficacyPct}
               color="bg-blue-600"
             />
-            <hr className="rule-soft my-1" />
+            <hr className="rule-soft" />
             <Component
-              label="breakthrough_premium"
+              label="Breakthrough premium"
               value={`${trial.breakthrough_premium ?? "—"}×`}
               max={trial.breakthrough_label ?? undefined}
               pct={breakthroughPct}
               color="bg-amber-500"
             />
-            <hr className="rule-soft my-1" />
+            <hr className="rule-soft" />
             <Component
-              label="phase_weight"
+              label="Phase weight"
               value={trial.phase_weight?.toString() ?? "—"}
               max="proximity to approval"
               pct={phasePct}
@@ -210,7 +210,7 @@ export default async function TrialPage({ params }: { params: Promise<{ nct_id: 
             <hr className="rule my-3" />
 
             <div className="flex items-baseline justify-between">
-              <span className="label-bright">IMPACT_SCORE</span>
+              <span className="label-bright">Impact score</span>
               <span className="text-2xl font-bold text-accent numeral tabular-nums">
                 {trial.impact_score?.toFixed(1)}
               </span>

@@ -37,15 +37,15 @@ export function TerminalHeader({ trials }: Props) {
 
   return (
     <header className="border-b-2 border-ink">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex flex-wrap items-baseline justify-between gap-3 text-[11px]">
-        <p className="font-semibold uppercase tracking-wider">
-          <span className="text-accent">◆</span> TRIAL_IMPACT_ATLAS{" "}
-          <span className="text-ink-muted">· v1.0</span>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-baseline justify-between gap-3 text-[11px]">
+        <p className="font-semibold uppercase tracking-wider truncate">
+          <span className="text-accent">◆</span> TRIAL_IMPACT_ATLAS
+          <span className="text-ink-muted hidden sm:inline"> · v1.0</span>
         </p>
-        <nav className="flex items-baseline gap-4 text-ink-muted">
+        <nav className="flex items-baseline gap-4 text-ink-muted shrink-0">
           <Link href="/about" className="hover:text-ink">about</Link>
           <Link href="/" className="hover:text-ink">atlas</Link>
-          <span>
+          <span className="hidden lg:inline">
             last_refresh: <span className="text-ink">{timestamp}</span> · ttl:{" "}
             <span className="text-ink">7d</span>
           </span>
@@ -53,35 +53,36 @@ export function TerminalHeader({ trials }: Props) {
       </div>
 
       {/* Human-readable intro */}
-      <div className="max-w-7xl mx-auto px-6 pt-6 pb-2">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-6 pb-2">
         <h1
-          className="text-3xl md:text-4xl font-bold text-ink leading-tight max-w-3xl"
+          className="text-2xl md:text-4xl font-bold text-ink leading-tight max-w-3xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Which clinical trials could change humanity the most?
         </h1>
         <p
-          className="text-ink-muted mt-3 max-w-2xl text-[14px] leading-relaxed"
+          className="text-ink-muted mt-3 max-w-2xl text-[13px] md:text-[14px] leading-relaxed"
           style={{ fontFamily: "var(--font-display)" }}
         >
           A ranked atlas of {total.toLocaleString()} ongoing trials, scored by best-case
           life-years saved if the treatment works fully. Each row is a trial; the bar shows
-          its impact relative to the others. Hover any row for a one-line summary, click to
-          dive in.{" "}
-          <Link href="/about" className="text-accent hover:underline">
+          its impact relative to the others.{" "}
+          <span className="hidden md:inline">Hover any row for a one-line summary, click to dive in.</span>
+          <span className="md:hidden">Tap any row to dive in.</span>{" "}
+          <Link href="/about" className="text-accent hover:underline whitespace-nowrap">
             How this works ↗
           </Link>
         </p>
       </div>
 
       {/* Stats grid */}
-      <div className="max-w-7xl mx-auto px-6 pb-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mt-4">
           {[
-            { l: "TRIALS_TRACKED", v: total.toLocaleString(), d: "from ClinicalTrials.gov" },
-            { l: "LIFE-YEARS", v: formatLifeYears(totalLY), d: "annual ceiling, top 500" },
-            { l: "PHASE_3", v: phase3.toString(), d: "≈late stage" },
-            { l: "ENRICHED", v: enriched.toString(), d: "Claude-scored" },
+            { l: "Trials tracked", v: total.toLocaleString(), d: "from ClinicalTrials.gov" },
+            { l: "Life-years", v: formatLifeYears(totalLY), d: "annual ceiling, top 500" },
+            { l: "Phase 3", v: phase3.toString(), d: "≈ late stage" },
+            { l: "Enriched", v: enriched.toString(), d: "Claude-scored" },
           ].map((s) => (
             <div key={s.l} className="border border-rule p-3 bg-white">
               <p className="label">{s.l}</p>
@@ -93,7 +94,7 @@ export function TerminalHeader({ trials }: Props) {
 
         {/* Distribution treemap */}
         <div className="mt-5">
-          <p className="label mb-2">DISTRIBUTION_BY_INTERVENTION</p>
+          <p className="label mb-2">Distribution by intervention</p>
           <div className="flex h-7 border border-rule overflow-hidden bg-white">
             {(["GENE", "BIO", "DRUG", "DEV", "OTHER"] as const).map((cat) => {
               const pct = (counts[cat] / total) * 100;
@@ -105,8 +106,25 @@ export function TerminalHeader({ trials }: Props) {
                   style={{ width: `${pct}%`, backgroundColor: CAT_COLOR[cat] }}
                   title={`${cat} ${counts[cat]} (${pct.toFixed(0)}%)`}
                 >
-                  {pct > 8 && `${cat} ${pct.toFixed(0)}%`}
+                  {pct > 14 && `${cat} ${pct.toFixed(0)}%`}
                 </div>
+              );
+            })}
+          </div>
+          {/* Legend — always visible for the smaller segments */}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-ink-muted">
+            {(["GENE", "BIO", "DRUG", "DEV", "OTHER"] as const).map((cat) => {
+              const pct = (counts[cat] / total) * 100;
+              if (pct < 1) return null;
+              return (
+                <span key={cat} className="inline-flex items-center gap-1.5">
+                  <span
+                    className="inline-block w-2.5 h-2.5"
+                    style={{ backgroundColor: CAT_COLOR[cat] }}
+                  />
+                  <span>{cat}</span>
+                  <span className="text-ink-faint numeral">{pct.toFixed(0)}%</span>
+                </span>
               );
             })}
           </div>

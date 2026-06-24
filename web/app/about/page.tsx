@@ -3,7 +3,7 @@ import Link from "next/link";
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section className="mb-12">
-      <p className="label mb-3">
+      <p className="label mb-3 numeral">
         <span className="text-accent">{">"}</span> {id}
       </p>
       <h2
@@ -57,7 +57,7 @@ export default function About() {
 
         <hr className="rule mb-12" />
 
-        <Section id="01_the_problem" title="The opportunity">
+        <Section id="01 · the opportunity" title="The opportunity">
           <p>
             Roughly half a million clinical trials are registered on ClinicalTrials.gov. Most
             of the world cannot tell which of them matter. Funders, researchers, journalists,
@@ -76,7 +76,7 @@ export default function About() {
           </p>
         </Section>
 
-        <Section id="02_what_this_is" title="What you're looking at">
+        <Section id="02 · what you're looking at" title="What you're looking at">
           <p>
             A weekly-refreshed atlas of active clinical trials, ranked by{" "}
             <span className="font-semibold">best-case life-years saved if the treatment works fully</span>.
@@ -91,7 +91,7 @@ export default function About() {
           </p>
         </Section>
 
-        <Section id="03_methodology" title="How the score works">
+        <Section id="03 · how the score works" title="How the score works">
           <p className="mb-4">For every trial we estimate four things, then multiply them:</p>
 
           <div className="border border-rule bg-white p-4 my-6">
@@ -137,7 +137,7 @@ export default function About() {
           </p>
         </Section>
 
-        <Section id="04_what_its_not" title="What this is not">
+        <Section id="04 · what this is not" title="What this is not">
           <p>
             <span className="font-semibold">Not a prediction.</span> We don't claim to know
             which trials will succeed. We measure what's on the table, not the odds of
@@ -154,7 +154,7 @@ export default function About() {
           </p>
         </Section>
 
-        <Section id="05_sources" title="Sources & technology">
+        <Section id="05 · sources & technology" title="Sources & technology">
           <p>
             Trial data: <span className="font-mono text-[13px]">clinicaltrials.gov/api/v2</span>,
             refreshed weekly. Disease burden: IHME Global Burden of Disease 2021.

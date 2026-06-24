@@ -77,13 +77,12 @@ export function TrialList({ trials }: { trials: Trial[] }) {
   return (
     <section className="max-w-7xl mx-auto px-6 py-8">
       {/* Command-line style filter bar */}
-      <div className="border border-rule bg-white px-3 py-2 mb-4 text-[11px] flex flex-wrap items-center gap-x-4 gap-y-1">
-        <span className="text-accent font-semibold">{">"}</span>
+      <div className="border border-rule bg-white px-3 py-2 mb-4 text-[11px] flex flex-wrap items-center gap-x-3 gap-y-2">
+        <span className="text-accent font-semibold hidden md:inline">{">"}</span>
 
-        <span className="text-ink-muted">filter:</span>
-
+        {/* Phases */}
         <span className="flex items-center gap-1">
-          <span className="label">phase=</span>
+          <span className="label">phase</span>
           {ALL_PHASES.map((p) => (
             <button
               key={p}
@@ -99,7 +98,8 @@ export function TrialList({ trials }: { trials: Trial[] }) {
           ))}
         </span>
 
-        <span className="flex items-center gap-1">
+        {/* Enrollment — hide on mobile to save space */}
+        <span className="hidden md:flex items-center gap-1">
           <span className="label">enrollment≥</span>
           <input
             type="number"
@@ -111,28 +111,26 @@ export function TrialList({ trials }: { trials: Trial[] }) {
           />
         </span>
 
-        <span className="flex items-center gap-1 flex-1 min-w-[180px]">
-          <span className="label">search=</span>
-          <span className="text-ink-muted">"</span>
+        {/* Search — takes the full remaining row on mobile */}
+        <span className="flex items-center gap-1 flex-1 min-w-[180px] order-last md:order-none w-full md:w-auto">
+          <span className="label">search</span>
           <input
             type="text"
             placeholder="condition or trial…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 px-1 py-0.5 bg-transparent focus:outline-none text-ink placeholder:text-ink-faint"
+            className="flex-1 px-1.5 py-0.5 border border-rule md:border-0 bg-white focus:outline-none focus:border-accent text-ink placeholder:text-ink-faint"
           />
-          <span className="text-ink-muted">"</span>
         </span>
 
-        <span className="text-ink-muted ml-auto">
+        <span className="text-ink-muted ml-auto whitespace-nowrap">
           <span className="text-ink font-semibold">{filtered.length}</span>
-          /{trials.length} shown
+          /{trials.length}
         </span>
       </div>
 
-      {/* Table */}
-      <div className="border border-rule bg-white">
-        {/* Header row */}
+      {/* ── Desktop: dense table ─────────────────────────────────── */}
+      <div className="border border-rule bg-white hidden md:block">
         <div className="grid grid-cols-[3rem_4rem_1fr_4rem_4rem_7rem_4rem] gap-3 px-3 py-2 border-b border-ink bg-paper">
           <span className="label">#</span>
           <span className="label">type</span>
@@ -169,7 +167,7 @@ export function TrialList({ trials }: { trials: Trial[] }) {
                 <span className={`font-bold ${cat.color}`}>{cat.label}</span>
                 <span className="truncate">
                   <span className="text-ink">{condition}</span>
-                  <span className="text-ink-faint ml-2 hidden md:inline">
+                  <span className="text-ink-faint ml-2">
                     · {(t.tagline ?? t.title).slice(0, 80)}
                   </span>
                 </span>
@@ -181,7 +179,6 @@ export function TrialList({ trials }: { trials: Trial[] }) {
                 </span>
               </Link>
 
-              {/* Expanded preview on hover */}
               {isExpanded && t.tagline && (
                 <div
                   onMouseEnter={() => setExpanded(t.nct_id)}
@@ -199,6 +196,63 @@ export function TrialList({ trials }: { trials: Trial[] }) {
                 </div>
               )}
             </div>
+          );
+        })}
+
+        {filtered.length === 0 && (
+          <div className="px-3 py-12 text-center text-ink-muted text-sm">
+            no_match — adjust filters
+          </div>
+        )}
+      </div>
+
+      {/* ── Mobile: stacked cards ────────────────────────────────── */}
+      <div className="md:hidden border border-rule bg-white divide-y divide-rule-soft">
+        {filtered.map((t, i) => {
+          const ly = lifeYearsAtStake(t);
+          const pct = (ly / topLY) * 100;
+          const cat = categoryOf(t.intervention_types);
+          const condition = (t.conditions.split(";")[0] || "").trim();
+
+          return (
+            <Link
+              key={t.nct_id}
+              href={`/trial/${t.nct_id}`}
+              className="row block p-3 active:bg-row-hover"
+            >
+              {/* Top meta row */}
+              <div className="flex items-center gap-2 text-[10px] mb-2">
+                <span className="text-ink-faint numeral tabular-nums">
+                  #{String(i + 1).padStart(2, "0")}
+                </span>
+                <span className={`font-bold ${cat.color}`}>{cat.label}</span>
+                <span className="text-ink-muted uppercase">
+                  {t.phase.replace("PHASE", "ph ")}
+                </span>
+                <span className="ml-auto text-right">
+                  <span className="font-semibold text-accent numeral tabular-nums text-sm">
+                    {formatLifeYears(ly)}
+                  </span>
+                  <span className="text-ink-faint"> life-yrs</span>
+                </span>
+              </div>
+
+              {/* Condition + tagline */}
+              <p className="text-[13px] text-ink leading-snug mb-2">
+                <span className="font-semibold">{condition}</span>
+                {t.tagline && (
+                  <span className="text-ink-muted"> · {t.tagline}</span>
+                )}
+              </p>
+
+              {/* Impact bar */}
+              <div className="flex items-center gap-2">
+                <ImpactBar10 pct={pct} />
+                <span className="text-[10px] text-ink-faint">
+                  {pct.toFixed(0)}% of top
+                </span>
+              </div>
+            </Link>
           );
         })}
 
