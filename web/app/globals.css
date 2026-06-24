@@ -1,157 +1,135 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #faf8f3;
-  --ink: #1a1815;
-  --ink-muted: #6b6660;
-  --rule: #d6cfc0;
-  --accent: #a8321a;
+  --paper: #fafafa;
+  --ink: #0f172a;
+  --ink-muted: #64748b;
+  --ink-faint: #94a3b8;
+  --rule: #cbd5e1;
+  --rule-soft: #e2e8f0;
+  --accent: #059669;        /* emerald — the "live data" green */
+  --accent-bio: #2563eb;
+  --accent-drug: #f59e0b;
+  --accent-device: #8b5cf6;
+  --accent-other: #64748b;
+  --row-hover: #f1f5f9;
 }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
   --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
   --color-accent: var(--accent);
+  --color-row-hover: var(--row-hover);
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
 }
 
 body {
-  font-family: var(--font-sans);
-  font-feature-settings: "ss01", "ss02", "cv11";
+  font-family: var(--font-mono);
+  font-feature-settings: "ss01", "cv11";
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-.font-serif {
-  font-family: var(--font-serif);
+.font-mono { font-family: var(--font-mono); }
+.font-sans { font-family: var(--font-sans); }
+.font-serif { font-family: var(--font-serif); }
+.font-display { font-family: var(--font-display); }
+
+.numeral {
+  font-variant-numeric: tabular-nums;
 }
 
-.font-sans {
-  font-family: var(--font-sans);
-}
-
-.smallcaps {
-  font-family: var(--font-sans);
+/* Terminal-style heading labels */
+.label {
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
+  font-size: 10px;
   font-weight: 500;
-  font-size: 0.7rem;
+  color: var(--ink-muted);
 }
 
+.label-bright {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Rule lines */
 .rule {
   height: 1px;
   background-color: var(--rule);
   border: 0;
 }
 
-.drop-cap::first-letter {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  font-size: 4.5rem;
-  line-height: 0.85;
-  float: left;
-  padding-right: 0.5rem;
-  padding-top: 0.5rem;
+.rule-soft {
+  height: 1px;
+  background-color: var(--rule-soft);
+  border: 0;
 }
 
-.numeral {
-  font-variant-numeric: tabular-nums oldstyle-nums;
+.rule-bold {
+  height: 2px;
+  background-color: var(--ink);
+  border: 0;
 }
 
-/* ── Reveal on scroll ─────────────────────────────────────────────── */
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+/* Row hover */
+.row {
+  transition: background-color 100ms ease;
+}
+.row:hover {
+  background-color: var(--row-hover);
 }
 
-.reveal-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Stagger via delay on children */
-.reveal-delay-1 { transition-delay: 80ms; }
-.reveal-delay-2 { transition-delay: 160ms; }
-.reveal-delay-3 { transition-delay: 240ms; }
-
-/* ── Magnitude bar ────────────────────────────────────────────────── */
-.bar-track {
-  position: relative;
-  height: 4px;
-  background-color: color-mix(in srgb, var(--rule) 70%, transparent);
-  overflow: hidden;
-  border-radius: 0;
-}
-
-.bar-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background-color: var(--accent);
-  width: var(--bar-width, 0%);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 1200ms cubic-bezier(0.16, 1, 0.3, 1) 200ms;
-}
-
-.reveal-visible .bar-fill {
-  transform: scaleX(1);
-}
-
-.hero-bar {
-  height: 8px;
-}
-
-/* ── Hover states ─────────────────────────────────────────────────── */
-.entry {
-  cursor: pointer;
-}
-
-.entry .tagline {
-  transition: color 320ms ease, font-style 320ms ease;
-}
-
-.entry:hover .tagline {
+/* Subtle blinking cursor */
+.cursor::after {
+  content: "▌";
+  margin-left: 0.25rem;
+  animation: blink 1.2s steps(2, end) infinite;
   color: var(--accent);
-  font-style: italic;
+}
+@keyframes blink {
+  to { visibility: hidden; }
 }
 
-.entry .bar-fill {
-  transition:
-    transform 1200ms cubic-bezier(0.16, 1, 0.3, 1) 200ms,
-    background-color 320ms ease,
-    height 320ms ease;
+/* Segmented bar (10 cells) for impact display */
+.bar10 {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
 }
-
-.entry:hover .bar-fill {
-  background-color: color-mix(in srgb, var(--accent) 85%, black);
-}
-
-.entry .hover-reveal {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height 420ms ease, opacity 280ms ease, margin-top 420ms ease;
-  margin-top: 0;
-}
-
-.entry:hover .hover-reveal {
-  max-height: 80px;
-  opacity: 1;
-  margin-top: 0.75rem;
-}
-
-.entry .arrow {
+.bar10-cell {
   display: inline-block;
-  transform: translateX(-4px);
-  opacity: 0;
-  transition: transform 320ms ease, opacity 320ms ease;
+  width: 6px;
+  height: 12px;
+  background-color: var(--rule-soft);
 }
+.bar10-cell.on {
+  background-color: var(--ink);
+}
+.bar10-cell.on.green { background-color: var(--accent); }
 
-.entry:hover .arrow {
-  transform: translateX(0);
-  opacity: 1;
+/* Sparkline-style score component mini-bars */
+.spark4 {
+  display: inline-flex;
+  gap: 1.5px;
+  align-items: flex-end;
+  height: 14px;
 }
+.spark4-bar {
+  width: 3px;
+  background-color: var(--ink);
+  opacity: 0.7;
+}
+.spark4-bar.bio { background-color: var(--accent-bio); }
+.spark4-bar.drug { background-color: var(--accent-drug); }
+.spark4-bar.device { background-color: var(--accent-device); }
